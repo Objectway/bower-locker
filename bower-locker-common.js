@@ -13,7 +13,8 @@ var cwd = process.cwd();
 function mapDependencyData(bowerInfo) {
     return {
         name: bowerInfo.name,
-        commit: bowerInfo._resolution.commit,
+        //commit: bowerInfo._resolution.commit,
+        commit: bowerInfo._resolution ? bowerInfo._resolution.commit : bowerInfo._release,
         release: bowerInfo._release,
         src: bowerInfo._source,
         originalSrc: bowerInfo._originalSource
@@ -36,9 +37,14 @@ function getDependency(filepath) {
  * @returns {Object} Returns dependency object for each dependency containing (dirName, commit, release, src, etc.)
  */
 function getAllDependencies() {
-    var bowerDependencies = fs.readdirSync('./bower_components', {encoding: 'utf8'});
+    var bowerrc;
+  var bowerrcFile = fs.readFileSync(".bowerrc", "utf8");
+  bowerrc = JSON.parse(bowerrcFile);
+  var componentsDir = bowerrc.directory ? bowerrc.directory : './bower_components';
+  var bowerDependencies = fs.readdirSync(componentsDir, {encoding: 'utf8'});
     return bowerDependencies.map(function(dirname) {
-        var filepath = nodePath.resolve(cwd, './bower_components', dirname, '.bower.json');
+        var filepath = nodePath.resolve(cwd, componentsDir, dirname, '.bower.json');
+        console.log("PATH", filepath);
         var dependencyInfo = getDependency(filepath);
         dependencyInfo.dirName = dirname;
         return dependencyInfo;
