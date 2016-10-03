@@ -23,9 +23,11 @@ function unlock(isVerbose) {
     }
 
     // Load original bower file
-    var originalBowerConfigStr = fs.readFileSync('bower-locker.bower.json', {encoding: 'utf8'});
+    var originalBowerConfigJSON = JSON.parse( fs.readFileSync('bower-locker.bower.json', {encoding: 'utf8'}) );
+    // Mantein the actual last version of the app
+    originalBowerConfigJSON.version = JSON.parse(fs.readFileSync('bower.json', {encoding: 'utf8'})).version;
     // Write it back as bower.json
-    fs.writeFileSync('bower.json', originalBowerConfigStr, {encoding: 'utf8'});
+    fs.writeFileSync('bower.json', JSON.stringify(originalBowerConfigJSON), {encoding: 'utf8'});
 
     console.log('Unlocking completed.');
 }
